@@ -29,6 +29,91 @@
         ];
         const QUESTION_COUNT = 200;
 
+        // --- Gift Details (Description and Prevalence) ---
+        // Note: Prevalence figures are illustrative and based on general surveys, not exact statistics.
+        const GIFT_DETAILS = {
+            "Apostleship": { 
+                description: "You have a special ability to develop new ministries, churches, or missions in areas where the Gospel has not yet been established. You are a pioneer and an innovator.",
+                prevalence: "1%"
+            },
+            "Prophecy": {
+                description: "You are able to proclaim God's truth with clarity and apply it powerfully to a present situation, often speaking with great conviction and calling people to repentance and righteousness.",
+                prevalence: "3%"
+            },
+            "Evangelism": {
+                description: "You have a deep desire and effectiveness in sharing the Gospel with non-believers, leading them to faith in Jesus Christ.",
+                prevalence: "12%"
+            },
+            "Shepherding": {
+                description: "You have the capacity to care for the spiritual welfare of a group of believers, guiding, protecting, and nurturing them toward spiritual maturity. You are a true spiritual guide.",
+                prevalence: "10%"
+            },
+            "Teaching": {
+                description: "You are gifted at clearly explaining, systematizing, and applying God's Word in a way that helps others learn and grow in their faith.",
+                prevalence: "15%"
+            },
+            "Serving": {
+                description: "You find joy and fulfillment in meeting practical needs and alleviating burdens for others, often behind the scenes, with a spirit of humility.",
+                prevalence: "25%"
+            },
+            "Exhortation": {
+                description: "You have the ability to encourage, motivate, and counsel others toward action and greater spiritual vitality. You are an uplifter and motivator.",
+                prevalence: "18%"
+            },
+            "Giving": {
+                description: "You possess the ability to contribute material resources to the Lord's work with liberality and cheerfulness, often exceeding expected levels.",
+                prevalence: "8%"
+            },
+            "Giving Aid": {
+                description: "Your gift is the capacity to wisely manage and steward resources, projects, or people to achieve God's goals. You bring order and efficiency.",
+                prevalence: "10%"
+            },
+            "Compassion": {
+                description: "You are able to feel genuine empathy and concern for suffering people and translate that compassion into effective action.",
+                prevalence: "22%"
+            },
+            "Healing": {
+                description: "You are used by God to restore health and wholeness, physically or emotionally, often instantaneously, demonstrating God's power.",
+                prevalence: "2%"
+            },
+            "Working Miracles": {
+                description: "You have the capacity to perform mighty acts of God that alter the normal course of nature, demonstrating the supernatural power of God.",
+                prevalence: "1%"
+            },
+            "Tongues": {
+                description: "You have the ability to speak a language you have never learned, either human or angelic, for prayer, self-edification, or corporate worship.",
+                prevalence: "4%"
+            },
+            "Interpretation of Tongues": {
+                description: "You are able to translate the message of one speaking in tongues so the entire body of Christ can be edified.",
+                prevalence: "2%"
+            },
+            "Wisdom": {
+                description: "You are granted exceptional insight into how to apply spiritual truth to complex, specific situations and dilemmas.",
+                prevalence: "6%"
+            },
+            "Knowledge": {
+                description: "You are given the capacity to discover, analyze, and systematize information and ideas that are critical to the growth of the church.",
+                prevalence: "7%"
+            },
+            "Faith": {
+                description: "You possess extraordinary confidence in God's power and promises, enabling you to step out and accomplish great things for Him against all apparent odds.",
+                prevalence: "5%"
+            },
+            "Discernment": {
+                description: "You have the power to clearly distinguish between truth and error, especially regarding the motives and spirits behind a person or situation.",
+                prevalence: "11%"
+            },
+            "Helps": {
+                description: "Your gift is the ability to assist others in their ministry and tasks with efficiency and effectiveness, freeing them up to focus on their primary callings.",
+                prevalence: "20%"
+            },
+            "Administration": {
+                description: "You are skilled at planning, organizing, and directing groups of people to accomplish specific goals for the ministry or church.",
+                prevalence: "13%"
+            }
+        };
+
         // --- Global State ---
         let db;
         let auth;
@@ -182,26 +267,43 @@
         const renderResults = () => {
             const sortedGifts = calculateResults();
             const topGift = sortedGifts[0];
+            
+            // Get details for the top gift
+            const details = GIFT_DETAILS[topGift.gift] || { description: "No description available.", prevalence: "N/A" };
 
             // Show Results View and hide Assessment View
             assessmentView.classList.add('hidden');
             resultsView.classList.remove('hidden');
 
-            // 1. Top Gift Display
+            // 1. Top Gift Display - UPDATED TO INCLUDE DESCRIPTION AND PREVALENCE
             topGiftDisplay.innerHTML = `
                 <h4 class="text-xl font-semibold mb-1">Your Primary Gift</h4>
                 <h1 class="text-5xl font-extrabold text-green-700">${topGift.gift}</h1>
-                <p class="text-lg mt-2">Score: <b>${topGift.score}</b></p>
+                <p class="text-lg mt-2 mb-4">Score: <b>${topGift.score}</b></p>
+                <div class="bg-green-100 p-4 rounded-xl border border-green-300 shadow-inner">
+                    <p class="text-gray-700 font-medium text-lg">${details.description}</p>
+                    <p class="text-sm text-green-800 mt-3 font-semibold">
+                        (Approx. ${details.prevalence} of Christians identify with this gift.)
+                    </p>
+                </div>
             `;
 
-            // 2. Top Four List
+            // 2. Top Four List - UPDATED TO INCLUDE PREVALENCE
             topFourList.innerHTML = '';
             sortedGifts.slice(0, 4).forEach((item, index) => {
-                const rankClass = index === 0 ? 'bg-yellow-200 font-bold' : 'bg-white';
+                const itemDetails = GIFT_DETAILS[item.gift] || { prevalence: "N/A" };
+                const rankClass = index === 0 ? 'bg-yellow-100 font-bold border-yellow-400' : 'bg-white border-gray-200';
+                
                 topFourList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 rounded-lg shadow-sm border border-gray-200 ${rankClass}">
-                        <span class="text-lg">#${index + 1}: ${item.gift}</span>
-                        <span class="text-xl text-indigo-600">${item.score}</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-lg shadow-md border-2 ${rankClass}">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl font-extrabold text-indigo-600 w-8">#${index + 1}</span>
+                            <span class="text-xl text-gray-800">${item.gift}</span>
+                        </div>
+                        <div class="mt-2 sm:mt-0 flex items-center space-x-4">
+                            <span class="text-sm text-gray-500">Prevalence: ${itemDetails.prevalence}</span>
+                            <span class="text-2xl font-bold text-green-700">Score: ${item.score}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -343,7 +445,7 @@
             <h2 class="text-4xl font-extrabold text-center text-green-700">Assessment Complete!</h2>
             
             <div id="top-gift-display" class="bg-white p-8 rounded-2xl border-4 border-green-500 shadow-xl text-center">
-                <!-- Top gift will be displayed here -->
+                <!-- Top gift, score, description, and prevalence will be displayed here -->
             </div>
 
             <div id="top-four-display" class="bg-white p-6 rounded-xl shadow-md">
