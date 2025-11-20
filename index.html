@@ -4,362 +4,358 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spiritual Gifts Assessment</title>
-    
-    <!-- 1. Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 2. CRITICAL: Load the custom configuration file. 
-         This script MUST run first as it defines the global Firebase variables 
-         (window.__app_id, window.__firebase_config, etc.). -->
-    <script src="./config.js"></script> 
-    
-    <!-- 3. Main Application Script (uses the variables loaded in step 2) -->
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-green-50 min-h-screen p-4">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-8">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-extrabold">Spiritual Gifts Assessment</h1>
+            <p class="mt-4 text-indigo-100" id="user-id-display">Offline mode • Local only</p>
+        </div>
+
+        <div class="p-8 space-y-12">
+            <div id="assessment-view">
+                <div id="question-area" class="bg-indigo-50 rounded-2xl p-10 text-center border-2 border-indigo-200">
+                    <h3 class="text-3xl font-bold text-indigo-800">Question 1 / 200</h3>
+                    <p class="text-lg mt-3 text-gray-600">0 = Not at all • 5 = Very Strongly</p>
+                </div>
+
+                <form id="score-form" class="mt-10 flex flex-col md:flex-row gap-6 items-center justify-center">
+                    <input type="number" id="score-input" min="0" max="5" value="0"
+                           class="w-full md:w-48 p-8 text-6xl font-bold text-center rounded-2xl border-4 border-indigo-300 focus:border-indigo-600 outline-none"
+                           oninput="this.value = Math.max(0, Math.min(5, parseInt(this.value)||0))">
+                    <button type="submit"
+                            class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-2xl py-8 px-12 rounded-2xl shadow-xl transform hover:scale-105 transition">
+                        Submit → (Enter)
+                    </button>
+                </form>
+
+                <div class="mt-10">
+                    <p id="progress-text" class="text-right text-gray-600 font-medium text-lg">Progress: 0/200 (0%)</p>
+                    <div class="w-full bg-gray-200 rounded-full h-8 mt-2 overflow-hidden">
+                        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full transition-all duration-500" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-view" class="hidden space-y-10">
+                <h2 class="text-5xl font-extrabold text-center text-green-600">Assessment Complete!</h2>
+                <div id="top-gift-display" class="bg-gradient-to-br from-green-50 to-emerald-50 p-10 rounded-3xl border-4 border-green-400"></div>
+                <div class="bg-white p-8 rounded-3xl shadow-xl">
+                    <h3 class="text-3xl font-bold mb-6 text-center">Your Top 4 Gifts</h3>
+                    <div id="top-four-list" class="space-y-4"></div>
+                </div>
+                <button onclick="window.app.resetAssessment()"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-2xl py-6 rounded-2xl shadow-xl transition transform hover:scale-105">
+                    Start New Assessment
+                </button>
+            </div>
+
+            <div id="status-message" class="fixed bottom-6 left-1/2 -translate-x-1/2 max-w-lg w-full p-4 rounded-lg text-center font-medium hidden"></div>
+        </div>
+    </div>
+
+    <script src="./config.js"></script>
+
     <script type="module">
-        // --- Firebase Imports ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Assessment Data ---
-        const CATEGORIES = [
-            "Apostleship", "Prophecy", "Evangelism", "Shepherding", "Teaching",
-            "Serving", "Exhortation", "Giving", "Giving Aid", "Compassion",
-            "Healing", "Working Miracles", "Tongues", "Interpretation of Tongues",
-            "Wisdom", "Knowledge", "Faith", "Discernment", "Helps", "Administration"
-        ];
+        const CATEGORIES = ["Apostleship","Prophecy","Evangelism","Shepherding","Teaching","Serving","Exhortation","Giving","Giving Aid","Compassion","Healing","Working Miracles","Tongues","Interpretation of Tongues","Wisdom","Knowledge","Faith","Discernment","Helps","Administration"];
         const QUESTION_COUNT = 200;
 
-        // --- Global State ---
-        let db;
-        let auth;
-        let userId = null;
-        let isFirebaseReady = false;
-        // The array is sized +1 to use 1-based indexing (Q1 to Q200)
+        // NEW: Super exciting descriptions + full Bible verses with text!
+        const GIFT_DETAILS = {
+            "Apostleship": {
+                excitement: "You are a fearless pioneer! God has wired you to launch new ministries, plant churches, and take the Gospel where it’s never been before — just like Paul who turned the world upside down!",
+                prevalence: "1%",
+                character: "Paul",
+                verse1: "Acts 13:2-3 (NIV)<br><i>While they were worshiping the Lord and fasting, the Holy Spirit said, “Set apart for me Barnabas and Saul for the work to which I have called them.”</i>",
+                verse2: "Romans 15:20 (NIV)<br><i>It has always been my ambition to preach the gospel where Christ was not known...</i>"
+            },
+            "Prophecy": {
+                excitement: "You carry the very voice of God! When you speak, heaven breaks in — people repent, lives change, and truth cuts through darkness like a flaming sword!",
+                prevalence: "3%",
+                character: "Agabus",
+                verse1: "Acts 11:28 (NIV)<br><i>One of them, named Agabus, stood up and through the Spirit predicted that a severe famine would spread over the entire Roman world.</i>",
+                verse2: "Acts 21:10-11 (NIV)<br><i>He came over to us... took Paul’s belt, tied his own hands and feet with it and said, “The Holy Spirit says, ‘In this way the Jewish leaders in Jerusalem will bind the owner of this belt...’”</i>"
+            },
+            "Evangelism": {
+                excitement: "You are a soul-winner on fire! Strangers become brothers and sisters in Christ because you can’t help but share the Good News with unstoppable joy!",
+                prevalence: "12%",
+                character: "Philip",
+                verse1: "Acts 8:35-38 (NIV)<br><i>Then Philip began with that very passage of Scripture and told him the good news about Jesus... “Look, here is water. What can stand in the way of my being baptized?”</i>",
+                verse2: "Acts 8:12 (NIV)<br><i>But when they believed Philip as he proclaimed the good news of the kingdom of God and the name of Jesus Christ, they were baptized, both men and women.</i>"
+            },
+            "Shepherding": {
+                excitement: "You are a true spiritual father/mother! People grow strong and safe under your care — you love the flock with the very heart of the Good Shepherd!",
+                prevalence: "10%",
+                character: "David (and Peter)",
+                verse1: "Psalm 23:1-3 (NIV)<br><i>The Lord is my shepherd, I lack nothing... He guides me along the right paths for his name’s sake.</i>",
+                verse2: "John 21:17 (NIV)<br><i>Jesus said to Simon Peter... “Feed my sheep.”</i>"
+            },
+            "Teaching": {
+                excitement: "You make the Word come alive! Complex truths become crystal clear — people walk away transformed and hungry for more of God!",
+                prevalence: "15%",
+                character: "Apollos",
+                verse1: "Acts 18:24-26 (NIV)<br><i>Meanwhile a Jew named Apollos... spoke with great fervor and taught about Jesus accurately...</i>",
+                verse2: "Acts 18:28 (NIV)<br><i>For he vigorously refuted his Jewish opponents in public debate, proving from the Scriptures that Jesus was the Messiah.</i>"
+            },
+            "Serving": {
+                excitement: "You are the unsung hero the church can’t live without! Your joyful service behind the scenes makes every miracle possible!",
+                prevalence: "25%",
+                character: "Onesiphorus",
+                verse1: "2 Timothy 1:16-18 (NIV)<br><i>May the Lord show mercy to the household of Onesiphorus, because he often refreshed me and was not ashamed of my chains.</i>",
+                verse2: "Mark 9:41 (NIV)<br><i>Truly I tell you, anyone who gives you a cup of water in my name... will certainly not lose their reward.</i>"
+            },
+            "Exhortation": {
+                excitement: "You breathe courage into weary souls! One word from you and people get back up, dust off, and run harder after Jesus!",
+                prevalence: "18%",
+                character: "Barnabas",
+                verse1: "Acts 4:36 (NIV)<br><i>Joseph, a Levite from Cyprus, whom the apostles called Barnabas (which means “son of encouragement”)...</i>",
+                verse2: "Acts 11:23 (NIV)<br><i>When he arrived and saw what the grace of God had done, he was glad and encouraged them all to remain true to the Lord with all their hearts.</i>"
+            },
+            "Giving": {
+                excitement: "Your generosity shakes the kingdom of darkness! You give with wild joy and God multiplies it to change lives forever!",
+                prevalence: "8%",
+                character: "The Macedonian Churches",
+                verse1: "2 Corinthians 8:2-4 (NIV)<br><i>In the midst of a very severe trial, their overflowing joy and their extreme poverty welled up in rich generosity... they urgently pleaded with us for the privilege of sharing in this service...</i>",
+                verse2: "2 Corinthians 9:7 (NIV)<br><i>God loves a cheerful giver.</i>"
+            },
+            "Giving Aid": {
+                excitement: "You see needs before anyone else and meet them with excellence! You are the glue that holds ministries together!",
+                prevalence: "10%",
+                character: "Dorcas (Tabitha)",
+                verse1: "Acts 9:36,39 (NIV)<br><i>All the widows stood around him, crying and showing him the robes and clothing that Dorcas had made while she was still with them.</i>",
+                verse2: "Romans 16:1-2 (NIV)<br><i>I commend to you our sister Phoebe... she has been the benefactor of many people, including me.</i>"
+            },
+            "Compassion": {
+                excitement: "Your heart breaks with God’s heart! You run toward the broken and hurting — and Jesus heals through your embrace!",
+                prevalence: "22%",
+                character: "The Good Samaritan",
+                verse1: "Luke 10:33-35 (NIV)<br><i>But a Samaritan... took pity on him... bandaged his wounds... took care of him.</i>",
+                verse2: "Colossians 3:12 (NIV)<br><i>As God’s chosen people... clothe yourselves with compassion, kindness, humility, gentleness and patience.</i>"
+            },
+            "Healing": {
+                excitement: "God’s healing power flows through your hands and prayers! The sick recover, the broken are made whole — miracles follow you!",
+                prevalence: "2%",
+                character: "Peter",
+                verse1: "Acts 5:15 (NIV)<br><i>People brought the sick into the streets... that at least Peter’s shadow might fall on some of them as he passed by.</i>",
+                verse2: "Acts 9:40 (NIV)<br><i>Peter sent them all out... knelt down and prayed... “Tabitha, get up.” She opened her eyes...</i>"
+            },
+            "Working Miracles": {
+                excitement: "You walk in raw supernatural power! Nature obeys, demons flee, and heaven invades earth when you pray!",
+                prevalence: "1%",
+                character: "Moses",
+                verse1: "Exodus 14:21-22 (NIV)<br><i>Then Moses stretched out his hand over the sea, and all that night the Lord drove the sea back... and the Israelites went through the sea on dry ground.</i>",
+                verse2: "Deuteronomy 34:11-12 (NIV)<br><i>...no one has ever shown the mighty power or performed the awesome deeds that Moses did...</i>"
+            },
+            "Tongues": {
+                excitement: "You speak the mysteries of heaven! Your prayer language charges you up and releases God’s power in ways no one else can!",
+                prevalence: "4%",
+                character: "The 120 at Pentecost",
+                verse1: "Acts 2:4 (NIV)<br><i>All of them were filled with the Holy Spirit and began to speak in other tongues as the Spirit enabled them.</i>",
+                verse2: "1 Corinthians 14:2 (NIV)<br><i>For anyone who speaks in a tongue... speaks mysteries by the Spirit.</i>"
+            },
+            "Interpretation of Tongues": {
+                excitement: "You unlock heaven’s secrets for the whole church! When you interpret, everyone is built up and God is glorified!",
+                prevalence: "2%",
+                character: "The Corinthian Church (instructed by Paul)",
+                verse1: "1 Corinthians 14:13 (NIV)<br><i>For this reason the one who speaks in a tongue should pray that they may interpret what they say.</i>",
+                verse2: "1 Corinthians 14:27-28 (NIV)<br><i>...and someone must interpret.</i>"
+            },
+            "Wisdom": {
+                excitement: "You have divine insight that solves impossible problems! Kings and leaders seek your counsel because heaven speaks through you!",
+                prevalence: "6%",
+                character: "Solomon",
+                verse1: "1 Kings 3:12 (NIV)<br><i>I will give you a wise and discerning heart, so that there will never have been anyone like you, nor will there ever be.</i>",
+                verse2: "1 Kings 4:34 (NIV)<br><i>From all nations people came to listen to Solomon’s wisdom...</i>"
+            },
+            "Knowledge": {
+                excitement: "God downloads supernatural revelation to you! Hidden truths, lost secrets, and deep mysteries are revealed when you seek Him!",
+                prevalence: "7%",
+                character: "Daniel",
+                verse1: "Daniel 2:22-23 (NIV)<br><i>He reveals deep and hidden things; he knows what lies in darkness... I thank and praise you, God of my ancestors: You have given me wisdom and power, you have made known to me what we asked of you...</i>",
+                verse2: "Daniel 2:47 (NIV)<br><i>Surely your God is the God of gods... who reveals mysteries.</i>"
+            },
+            "Faith": {
+                excitement: "You have mountain-moving, history-making faith! When you believe, impossible things become reality — miracles happen because YOU believe!",
+                prevalence: "5%",
+                character: "Abraham",
+                verse1: "Hebrews 11:8,11 (NIV)<br><i>By faith Abraham... obeyed and went... By faith Abraham, even though he was past age — was enabled to become a father because he considered him faithful who had made the promise.</i>",
+                verse2: "Romans 4:20-21 (NIV)<br><i>Yet he did not waver through unbelief regarding the promise of God, but was strengthened in his faith and gave glory to God, being fully persuaded that God had power to do what he had promised.</i>"
+            },
+            "Discernment": {
+                excitement: "You see what others can’t! Spirits, motives, truth vs. deception — nothing is hidden from you. You protect the church like a spiritual watchman!",
+                prevalence: "11%",
+                character: "Paul",
+                verse1: "Acts 16:18 (NIV)<br><i>She kept this up for many days. Finally Paul became so annoyed that he turned around and said to the spirit, “In the name of Jesus Christ I command you to come out of her!” At that moment the spirit left her.</i>",
+                verse2: "1 John 4:1 (NIV)<br><i>Dear friends, do not believe every spirit, but test the spirits to see whether they are from God...</i>"
+            },
+            "Helps": {
+                excitement: "You multiply other people’s ministries! Leaders flourish because you free them to do what only they can do — you are indispensable!",
+                prevalence: "20%",
+                character: "Timothy",
+                verse1: "Philippians 2:20-22 (NIV)<br><i>I have no one else like him, who will show genuine concern for your welfare... Timothy has proved himself, because as a son with his father he has served with me in the work of the gospel.</i>",
+                verse2: "Acts 19:22 (NIV)<br><i>He sent two of his helpers, Timothy and Erastus, to Macedonia...</i>"
+            },
+            "Administration": {
+                excitement: "You turn chaos into kingdom order! Vision becomes reality because you organize, plan, and lead with excellence!",
+                prevalence: "13%",
+                character: "Nehemiah",
+                verse1: "Nehemiah 2:17-18 (NIV)<br><i>Then I said to them... “Come, let us rebuild the wall of Jerusalem...” They replied, “Let us start rebuilding.” So they began this good work.</i>",
+                verse2: "Nehemiah 6:15 (NIV)<br><i>So the wall was completed... in fifty-two days.</i>"
+            }
+        };
+
+        let db = null, auth = null, userId = null, isFirebaseReady = false;
         let currentAnswers = new Array(QUESTION_COUNT + 1).fill(null);
         let currentQuestion = 1;
 
-        // --- DOM Elements ---
-        const questionArea = document.getElementById('question-area');
-        const scoreForm = document.getElementById('score-form');
-        const scoreInput = document.getElementById('score-input');
-        const progressText = document.getElementById('progress-text');
-        const progressBar = document.getElementById('progress-bar');
-        const assessmentView = document.getElementById('assessment-view');
-        const resultsView = document.getElementById('results-view');
-        const topGiftDisplay = document.getElementById('top-gift-display');
-        const topFourList = document.getElementById('top-four-list');
-        const statusMessage = document.getElementById('status-message');
-        const userIdDisplay = document.getElementById('user-id-display');
-
-        // --- Config Variables (Accessed from window global due to config.js) ---
-        // We ensure a fallback if config.js failed to load
-        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : '{}');
-        const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
-
-        // --- Utility Functions ---
-        const showStatus = (message, isError = false) => {
-            statusMessage.textContent = message;
-            statusMessage.className = `text-center p-3 rounded-lg ${isError ? 'text-red-600 bg-red-100' : 'text-green-600 bg-green-100'}`;
-            statusMessage.style.display = 'block';
-            setTimeout(() => {
-                statusMessage.style.display = 'none';
-            }, 3000);
+        const el = {
+            questionArea: document.getElementById('question-area'),
+            scoreForm: document.getElementById('score-form'),
+            scoreInput: document.getElementById('score-input'),
+            progressText: document.getElementById('progress-text'),
+            progressBar: document.getElementById('progress-bar'),
+            assessmentView: document.getElementById('assessment-view'),
+            resultsView: document.getElementById('results-view'),
+            topGiftDisplay: document.getElementById('top-gift-display'),
+            topFourList: document.getElementById('top-four-list'),
+            statusMessage: document.getElementById('status-message'),
+            userIdDisplay: document.getElementById('user-id-display')
         };
 
-        const saveProgress = async (data) => {
-            if (!isFirebaseReady) {
-                console.warn("Firebase not ready. Cannot save progress.");
-                return;
-            }
-            // Private user data path: /artifacts/{appId}/users/{userId}/assessment_progress/data
-            const docRef = doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data");
-            try {
-                // Stringify the array for safe storage in Firestore
-                const saveData = { answers: JSON.stringify(data), userId: userId, lastUpdated: new Date() };
-                await setDoc(docRef, saveData);
-                console.log("Progress saved to Firestore.");
-            } catch (e) {
-                console.error("Error saving document: ", e);
-                showStatus("Error saving progress to the cloud.", true);
-            }
+        const appId = window.__app_id || 'local';
+        let firebaseConfig = {};
+        if (typeof window.__firebase_config === 'string' && window.__firebase_config.trim() !== '' && window.__firebase_config !== '{}') {
+            try { firebaseConfig = JSON.parse(window.__firebase_config); } catch(e) {}
+        }
+
+        const showStatus = (msg, error = false) => {
+            el.statusMessage.textContent = msg;
+            el.statusMessage.className = `p-4 rounded-lg font-medium ${error ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+            el.statusMessage.style.display = 'block';
+            setTimeout(() => el.statusMessage.style.display = 'none', 4000);
         };
 
-        const loadProgress = async () => {
-            if (!isFirebaseReady) return null;
-            const docRef = doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data");
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data && data.answers) {
-                        console.log("Progress loaded from Firestore.");
-                        showStatus("Progress loaded from the cloud.", false);
-                        // Parse the string back into an array
-                        return JSON.parse(data.answers);
-                    }
-                }
-                console.log("No saved progress found in Firestore.");
-                return null;
-            } catch (e) {
-                console.error("Error loading document: ", e);
-                return null;
-            }
+        const saveProgress = async (data) => { if (isFirebaseReady && userId) try { await setDoc(doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data"), { answers: JSON.stringify(data) }); } catch(e) {} };
+        const loadProgress = async () => { if (!isFirebaseReady || !userId) return null; try { const snap = await getDoc(doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data")); if (snap.exists() && snap.data().answers) return JSON.parse(snap.data().answers); } catch(e) {} return null; };
+
+        const updateUI = () => {
+            const answered = currentAnswers.filter(a => a !== null).length - 1;
+            if (answered === QUESTION_COUNT) { renderResults(); return; }
+            while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) currentQuestion++;
+            if (currentQuestion > QUESTION_COUNT) { renderResults(); return; }
+
+            el.questionArea.innerHTML = `<h3 class="text-3xl font-bold text-indigo-800">Question ${currentQuestion} / 200</h3>
+                <p class="text-lg mt-3 text-gray-600">0 = Not at all • 5 = Very Strongly</p>`;
+            el.scoreInput.value = currentAnswers[currentQuestion] || 0;
+            el.scoreInput.focus();
+            el.scoreInput.select();
+
+            const pct = (answered / 200) * 100;
+            el.progressText.textContent = `Progress: ${answered}/200 (${pct.toFixed(0)}%)`;
+            el.progressBar.style.width = `${pct}%`;
         };
 
-        // Renders the current question and ensures the input is focused and selected.
-        const updateUIAndFocus = () => {
-            if (currentQuestion > QUESTION_COUNT) {
-                renderResults();
-                return;
-            }
-            
-            // 1. Update Question Text
-            questionArea.innerHTML = `<h3 class="text-2xl font-bold text-indigo-800">Question ${currentQuestion} / ${QUESTION_COUNT}</h3>
-                                     <p class="text-lg mt-2 text-gray-600">Score 0 (Not at all) to 5 (Consistently and strongly)</p>`;
-
-            // 2. Reset and Focus Input for rapid entry
-            scoreInput.value = currentAnswers[currentQuestion] || 0;
-            scoreInput.focus();
-            scoreInput.select(); 
-            
-            // 3. Update Progress Bar
-            let answeredCount = currentAnswers.filter(a => a !== null).length - 1; // -1 for index 0
-            const progress = (answeredCount / QUESTION_COUNT) * 100;
-            progressText.textContent = `Progress: ${answeredCount}/${QUESTION_COUNT} (${progress.toFixed(0)}%)`;
-            progressBar.style.width = `${progress}%`;
-            
-            // 4. Ensure assessment view is visible
-            resultsView.classList.add('hidden');
-            assessmentView.classList.remove('hidden');
-        };
-
-        // --- Event Handlers ---
-        scoreForm.addEventListener('submit', (e) => {
+        el.scoreForm.addEventListener('submit', e => {
             e.preventDefault();
-            const score = parseInt(scoreInput.value, 10);
-
-            if (score < 0 || score > 5 || isNaN(score)) {
-                showStatus("Error: Score must be between 0 and 5.", true);
-                scoreInput.value = currentAnswers[currentQuestion] || 0;
-                scoreInput.focus();
-                scoreInput.select();
-                return;
-            }
-
-            // Save the score
+            const score = parseInt(el.scoreInput.value, 10);
+            if (isNaN(score) || score < 0 || score > 5) return showStatus("Enter 0–5", true);
             currentAnswers[currentQuestion] = score;
-            saveProgress(currentAnswers); // Save immediately
-
-            // Move to the next unanswered question
+            saveProgress(currentAnswers);
             currentQuestion++;
-            while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) {
-                currentQuestion++;
-            }
-            
-            updateUIAndFocus();
+            updateUI();
         });
 
-        // --- Results Logic ---
         const calculateResults = () => {
-            const rowSums = new Array(20).fill(0);
-
-            for (let q = 1; q <= QUESTION_COUNT; q++) {
-                const score = currentAnswers[q];
-                if (score !== null) {
-                    // Formula: (question_number - 1) % number_of_categories
-                    const giftIndex = (q - 1) % CATEGORIES.length; 
-                    rowSums[giftIndex] += score;
-                }
-            }
-
-            return CATEGORIES.map((gift, index) => ({
-                gift: gift,
-                score: rowSums[index]
-            })).sort((a, b) => b.score - a.score);
+            const sums = new Array(20).fill(0);
+            for (let q = 1; q <= 200; q++) if (currentAnswers[q] !== null) sums[(q-1)%20] += currentAnswers[q];
+            return CATEGORIES.map((g,i) => ({gift: g, score: sums[i]})).sort((a,b) => b.score - a.score);
         };
-        
+
         const renderResults = () => {
-            const sortedGifts = calculateResults();
-            const topGift = sortedGifts[0];
+            const sorted = calculateResults();
+            const top = sorted[0];
+            const d = GIFT_DETAILS[top.gift];
 
-            // Show Results View and hide Assessment View
-            assessmentView.classList.add('hidden');
-            resultsView.classList.remove('hidden');
+            el.assessmentView.classList.add('hidden');
+            el.resultsView.classList.remove('hidden');
 
-            // 1. Top Gift Display
-            topGiftDisplay.innerHTML = `
-                <h4 class="text-xl font-semibold mb-1">Your Primary Gift</h4>
-                <h1 class="text-5xl font-extrabold text-green-700">${topGift.gift}</h1>
-                <p class="text-lg mt-2">Score: <b>${topGift.score}</b></p>
+            el.topGiftDisplay.innerHTML = `
+                <div class="text-center mb-10">
+                    <h4 class="text-2xl font-bold text-green-800">Your Primary Spiritual Gift Is...</h4>
+                    <h1 class="text-7xl font-extrabold text-green-600 my-6">${top.gift}!</h1>
+                    <p class="text-4xl font-bold mb-4">Score: ${top.score}/100</p>
+                </div>
+
+                <div class="bg-yellow-100 border-4 border-yellow-400 rounded-3xl p-8 mb-10 shadow-2xl">
+                    <p class="text-2xl leading-relaxed font-medium text-gray-800">${d.excitement}</p>
+                    <p class="text-lg font-bold text-yellow-800 mt-6">Only about ${d.prevalence} of believers have this as their strongest gift — you are rare and powerful!</p>
+                </div>
+
+                <div class="bg-blue-50 border-2 border-blue-300 rounded-3xl p-8">
+                    <h3 class="text-3xl font-bold text-blue-900 mb-6">Biblical Example: ${d.character}</h3>
+                    <div class="space-y-6 text-lg italic text-gray-700 leading-relaxed">
+                        <div class="bg-white p-6 rounded-xl shadow">${d.verse1}</div>
+                        <div class="bg-white p-6 rounded-xl shadow">${d.verse2}</div>
+                    </div>
+                </div>
             `;
 
-            // 2. Top Four List
-            topFourList.innerHTML = '';
-            sortedGifts.slice(0, 4).forEach((item, index) => {
-                const rankClass = index === 0 ? 'bg-yellow-200 font-bold' : 'bg-white';
-                topFourList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 rounded-lg shadow-sm border border-gray-200 ${rankClass}">
-                        <span class="text-lg">#${index + 1}: ${item.gift}</span>
-                        <span class="text-xl text-indigo-600">${item.score}</span>
+            el.topFourList.innerHTML = sorted.slice(0,4).map((item,i) => {
+                const dd = GIFT_DETAILS[item.gift];
+                const style = i === 0 ? 'bg-yellow-100 border-yellow-500 shadow-2xl' : 'bg-gray-50 border-gray-300';
+                return `<div class="p-6 rounded-2xl border-4 ${style} flex justify-between items-center transform transition hover:scale-105">
+                    <div class="flex items-center gap-6">
+                        <span class="text-5xl font-bold text-indigo-700">#${i+1}</span>
+                        <div>
+                            <div class="text-2xl font-bold">${item.gift}</div>
+                            <div class="text-sm text-gray-600">~${dd.prevalence} of believers</div>
+                        </div>
                     </div>
-                `;
-            });
+                    <span class="text-4xl font-extrabold text-green-600">${item.score}</span>
+                </div>`;
+            }).join('');
         };
 
-        // --- Public/Window Functions ---
-        window.app = window.app || {};
-
-        // Loads data and finds the next question to start or finish
-        window.app.loadProgressAndStart = async () => {
-            const loadedAnswers = await loadProgress();
-            
-            if (loadedAnswers && Array.isArray(loadedAnswers) && loadedAnswers.length === QUESTION_COUNT + 1) {
-                currentAnswers = loadedAnswers;
-                // Find the next unanswered question
-                currentQuestion = 1;
-                while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) {
-                    currentQuestion++;
+        window.app = {
+            resetAssessment: () => {
+                if (confirm("Delete all progress and start over?")) {
+                    currentAnswers = new Array(201).fill(null);
+                    currentQuestion = 1;
+                    if (isFirebaseReady) saveProgress(currentAnswers);
+                    showStatus("Fresh start! 🎉");
+                    updateUI();
                 }
-            } else {
-                // Start fresh if no data or invalid data loaded
-                currentAnswers = new Array(QUESTION_COUNT + 1).fill(null);
-                currentQuestion = 1;
-            }
-
-            updateUIAndFocus();
-        };
-
-        // Resets all data and restarts
-        window.app.resetAssessment = () => {
-            // Using a simple window.prompt replacement for confirmation to avoid window.confirm()
-            const confirmed = window.prompt("[Confirmation Required] Are you sure you want to clear ALL progress and start a new assessment?\nType 'YES' (all caps) to confirm:") === 'YES';
-            
-            if (confirmed) {
-                currentAnswers = new Array(QUESTION_COUNT + 1).fill(null);
-                currentQuestion = 1;
-                saveProgress(currentAnswers); // Save empty array to clear Firestore
-                showStatus("Assessment reset. Ready to start!", false);
-                updateUIAndFocus();
             }
         };
 
-        // --- Firebase Initialization ---
-        const initializeFirebase = async () => {
-            if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId) {
-                console.error("Firebase config is missing or invalid. Data persistence is disabled.");
-                userIdDisplay.textContent = "User ID: Persistence Disabled";
-                // Fallback: Start the app without persistence
-                window.app.loadProgressAndStart();
-                return;
-            }
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Authenticate user
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
+        const start = async () => {
+            if (firebaseConfig.projectId) {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
                     await signInAnonymously(auth);
-                }
-
-                // Wait for auth state to be confirmed
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isFirebaseReady = true;
-                        userIdDisplay.textContent = `User ID: ${userId}`;
-                        console.log(`Firebase authenticated. User ID: ${userId}`);
-                        
-                        // Start assessment only after Firebase is ready
-                        window.app.loadProgressAndStart();
-                    } else {
-                        console.error("User not authenticated.");
-                    }
-                });
-
-            } catch (error) {
-                console.error("Error initializing or authenticating Firebase:", error);
-                showStatus("Critical Error: Could not initialize Firebase.", true);
-                isFirebaseReady = false;
-                userIdDisplay.textContent = "User ID: Auth Error";
-                // Fallback: Start the app without persistence
-                window.app.loadProgressAndStart();
+                    onAuthStateChanged(auth, user => {
+                        if (user) {
+                            userId = user.uid; isFirebaseReady = true;
+                            el.userIdDisplay.textContent = "Connected • Cloud save active";
+                            (async () => { const saved = await loadProgress(); if (saved) currentAnswers = saved; updateUI(); })();
+                        }
+                    });
+                    return;
+                } catch (e) {}
             }
+            el.userIdDisplay.textContent = "Offline mode • Local only";
+            updateUI();
         };
-        
-        // Start Firebase initialization when the page is fully loaded
-        window.onload = initializeFirebase;
+
+        start();
     </script>
-</head>
-<body class="bg-gray-50 font-sans p-4 md:p-8">
-
-    <div id="app" class="max-w-4xl mx-auto bg-white shadow-2xl rounded-xl p-6 md:p-10 space-y-6">
-        <h1 class="text-4xl font-extrabold text-center text-indigo-700">Spiritual Gifts Assessment</h1>
-        <p class="text-center text-sm text-gray-500 mb-4 font-mono" id="user-id-display">Initializing Firebase...</p>
-        <hr class="border-indigo-200">
-
-        <!-- Assessment Section -->
-        <div id="assessment-view" class="space-y-6">
-            <h2 class="text-2xl font-semibold text-gray-700">Assessment Questions</h2>
-            
-            <div id="question-area" class="bg-indigo-50 p-6 rounded-xl shadow-inner border border-indigo-200">
-                <!-- Question text and scoring instruction rendered here by JS -->
-                <h3 class="text-2xl font-bold text-indigo-800">Loading...</h3>
-                <p class="text-lg mt-2 text-gray-600">Please wait while we connect to the database.</p>
-            </div>
-            
-            <form id="score-form" class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0 sm:space-x-4 pt-4">
-                <input type="number" 
-                        id="score-input" 
-                        min="0" 
-                        max="5" 
-                        value="0" 
-                        required 
-                        title="Enter a score from 0 (not at all) to 5 (consistently and strongly)"
-                        class="w-full sm:w-1/3 p-4 border-4 border-gray-300 rounded-xl focus:ring-4 focus:ring-indigo-400 transition duration-150 shadow-lg text-4xl text-center font-extrabold text-indigo-700"
-                        placeholder="0-5"
-                        oninput="this.value = Math.min(5, Math.max(0, parseInt(this.value) || 0))">
-                
-                <button type="submit" 
-                         class="w-full sm:w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-xl transition duration-200 shadow-2xl hover:shadow-indigo-400/50 focus:outline-none focus:ring-4 focus:ring-indigo-300 transform hover:scale-[1.01]">
-                    Submit Score (Press Enter)
-                </button>
-            </form>
-
-            <div id="progress-container" class="space-y-2 pt-4">
-                <p id="progress-text" class="text-sm text-gray-600 text-right">Progress: 0/200 (0%)</p>
-                <div class="w-full bg-gray-200 rounded-full h-3">
-                    <div id="progress-bar" class="bg-indigo-600 h-3 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Results Section (Initially hidden) -->
-        <div id="results-view" class="hidden space-y-8 p-6 bg-green-50 rounded-xl shadow-inner border border-green-300">
-            <h2 class="text-4xl font-extrabold text-center text-green-700">Assessment Complete!</h2>
-            
-            <div id="top-gift-display" class="bg-white p-8 rounded-2xl border-4 border-green-500 shadow-xl text-center">
-                <!-- Top gift will be displayed here -->
-            </div>
-
-            <div id="top-four-display" class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-2xl font-bold mb-4 text-gray-800 border-b pb-2 border-gray-200">Your Top 4 Gifts</h3>
-                <div id="top-four-list" class="space-y-3">
-                    <!-- Top 4 list will be displayed here -->
-                </div>
-            </div>
-
-            <button onclick="window.app.resetAssessment()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl transition duration-200 shadow-lg focus:outline-none focus:ring-4 focus:ring-red-300">
-                Start New Assessment (Clear Data)
-            </button>
-        </div>
-        
-        <div id="status-message" class="text-center p-3 hidden bg-red-100 rounded-xl font-medium shadow-md"></div>
-
-    </div>
 </body>
 </html>
