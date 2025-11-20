@@ -8,9 +8,8 @@
     <!-- 1. Load Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. CRITICAL: Load the custom configuration file. 
-         This script MUST run first as it defines the global Firebase variables 
-         (window.__app_id, window.__firebase_config, etc.). -->
+    <!-- 2. CRITICAL: Load the custom configuration file FIRST.
+         This file ensures global variables like __app_id and __firebase_config are defined. -->
     <script src="./config.js"></script> 
     
     <!-- 3. Main Application Script (uses the variables loaded in step 2) -->
@@ -28,6 +27,150 @@
             "Wisdom", "Knowledge", "Faith", "Discernment", "Helps", "Administration"
         ];
         const QUESTION_COUNT = 200;
+
+        // --- Gift Details (Description, Prevalence, Character, and Verse) ---
+        const GIFT_DETAILS = {
+            "Apostleship": { 
+                description: "You have a special ability to develop new ministries, churches, or missions in areas where the Gospel has not yet been established. You are a pioneer and an innovator.",
+                prevalence: "1%",
+                bibleCharacter: "Paul",
+                bibleVerse: "2 Corinthians 11:28: 'Besides everything else, I face daily the pressure of my concern for all the churches.'",
+                bibleVerse2: "Ephesians 4:11: 'So Christ himself gave the apostles, the prophets, the evangelists, the pastors and teachers.'"
+            },
+            "Prophecy": {
+                description: "You are able to proclaim God's truth with clarity and apply it powerfully to a present situation, often speaking with great conviction and calling people to repentance and righteousness.",
+                prevalence: "3%",
+                bibleCharacter: "Agabus",
+                bibleVerse: "Acts 11:28: 'One of them, named Agabus, stood up and through the Spirit predicted that a severe famine would spread over the entire Roman world. (This happened during the reign of Claudius.)'",
+                bibleVerse2: "1 Corinthians 14:3: 'But the one who prophesies speaks to people for their strengthening, encouraging and comfort.'"
+            },
+            "Evangelism": {
+                description: "You have a deep desire and effectiveness in sharing the Gospel with non-believers, leading them to faith in Jesus Christ.",
+                prevalence: "12%",
+                bibleCharacter: "Philip",
+                bibleVerse: "Acts 8:5-6: 'Philip went down to a city in Samaria and proclaimed the Messiah there. When the crowds heard Philip and saw the signs he performed, they all paid close attention to what he said.'",
+                bibleVerse2: "Ephesians 4:11: 'So Christ himself gave the apostles, the prophets, the evangelists, the pastors and teachers.'"
+            },
+            "Shepherding": {
+                description: "You have the capacity to care for the spiritual welfare of a group of believers, guiding, protecting, and nurturing them toward spiritual maturity. You are a true spiritual guide.",
+                prevalence: "10%",
+                bibleCharacter: "Peter",
+                bibleVerse: "1 Peter 5:2: 'Be shepherds of God’s flock that is under your care, watching over them—not because you must, but because you are willing, as God wants you to be...'",
+                bibleVerse2: "Ephesians 4:11: 'So Christ himself gave the apostles, the prophets, the evangelists, the pastors and teachers.'"
+            },
+            "Teaching": {
+                description: "You are gifted at clearly explaining, systematizing, and applying God's Word in a way that helps others learn and grow in their faith.",
+                prevalence: "15%",
+                bibleCharacter: "Apollos",
+                bibleVerse: "Acts 18:24-28: 'He vigorously refuted his Jewish opponents in public debate, proving from the Scriptures that Jesus was the Messiah.'",
+                bibleVerse2: "Romans 12:7: 'If it is serving, then serve; if it is teaching, then teach;'"
+            },
+            "Serving": {
+                description: "You find joy and fulfillment in meeting practical needs and alleviating burdens for others, often behind the scenes, with a spirit of humility.",
+                prevalence: "25%",
+                bibleCharacter: "Phoebe",
+                bibleVerse: "Romans 16:1-2: '...she has been a great help to many people, including me.'",
+                bibleVerse2: "1 Peter 4:11: 'If anyone serves, they should do so with the strength God provides, so that in all things God may be praised through Jesus Christ.'"
+            },
+            "Exhortation": {
+                description: "You have the ability to encourage, motivate, and counsel others toward action and greater spiritual vitality. You are an uplifter and motivator.",
+                prevalence: "18%",
+                bibleCharacter: "Barnabas",
+                bibleVerse: "Acts 4:36: 'Joseph... whom the apostles called Barnabas (which means “son of encouragement”), sold a field he owned and brought the money and put it at the apostles’ feet.'",
+                bibleVerse2: "Romans 12:8: 'if it is to encourage, then give encouragement;'"
+            },
+            "Giving": {
+                description: "You possess the ability to contribute material resources to the Lord's work with liberality and cheerfulness, often exceeding expected levels.",
+                prevalence: "8%",
+                bibleCharacter: "The Macedonian Churches",
+                bibleVerse: "2 Corinthians 8:2-3: '...their overflowing joy and their extreme poverty welled up in rich generosity. For I testify that they gave as much as they were able, and even beyond their ability.'",
+                bibleVerse2: "Romans 12:8: 'if it is to contribute to the needs of others, give generously;'"
+            },
+            "Giving Aid": {
+                description: "Your gift is the capacity to wisely manage and steward resources, projects, or people to achieve God's goals. You bring order and efficiency.",
+                prevalence: "10%",
+                bibleCharacter: "Dorcas (Tabitha)",
+                bibleVerse: "Acts 9:36: 'In Joppa there was a disciple named Tabitha... she was always doing good and helping the poor.'",
+                bibleVerse2: "1 Corinthians 12:28: 'And God has placed in the church first of all apostles, second prophets, third teachers, then miracles, then gifts of healing, of helping, of guidance, and of different kinds of tongues.'" // Using 'helping' as a close match
+            },
+            "Compassion": {
+                description: "You are able to feel genuine empathy and concern for suffering people and translate that compassion into effective action.",
+                prevalence: "22%",
+                bibleCharacter: "Jesus (The Good Samaritan)",
+                bibleVerse: "Luke 10:33-34: 'But a Samaritan, as he traveled, came where the man was; and when he saw him, he took pity on him. He went to him and bandaged his wounds...'",
+                bibleVerse2: "Romans 12:8: 'if it is to show mercy, do it cheerfully.'"
+            },
+            "Healing": {
+                description: "You are used by God to restore health and wholeness, physically or emotionally, often instantaneously, demonstrating God's power.",
+                prevalence: "2%",
+                bibleCharacter: "Paul",
+                bibleVerse: "Acts 14:8-10: 'Paul looked directly at him, saw that he had faith to be made well, and called out, “Stand up on your feet!”'",
+                bibleVerse2: "1 Corinthians 12:9: 'to another faith by the same Spirit, to another gifts of healing by that one Spirit,'"
+            },
+            "Working Miracles": {
+                description: "You have the capacity to perform mighty acts of God that alter the normal course of nature, demonstrating the supernatural power of God.",
+                prevalence: "1%",
+                bibleCharacter: "Elijah",
+                bibleVerse: "1 Kings 17:16: 'For the jar of flour was not used up and the jug of oil did not run dry, in keeping with the word of the Lord spoken by Elijah.'",
+                bibleVerse2: "1 Corinthians 12:10: 'to another miraculous powers, to another prophecy, to another distinguishing between spirits, to another speaking in different kinds of tongues, and to still another the interpretation of tongues.'"
+            },
+            "Tongues": {
+                description: "You have the ability to speak a language you have never learned, either human or angelic, for prayer, self-edification, or corporate worship.",
+                prevalence: "4%",
+                bibleCharacter: "The Disciples at Pentecost",
+                bibleVerse: "Acts 2:4: 'All of them were filled with the Holy Spirit and began to speak in other tongues as the Spirit enabled them.'",
+                bibleVerse2: "1 Corinthians 14:4: 'Anyone who speaks in a tongue edifies themselves, but the one who prophesies edifies the church.'"
+            },
+            "Interpretation of Tongues": {
+                description: "You are able to translate the message of one speaking in tongues so the entire body of Christ can be edified.",
+                prevalence: "2%",
+                bibleCharacter: "Paul (Instructing the Church)",
+                bibleVerse: "1 Corinthians 14:13: 'For this reason the one who speaks in a tongue should pray that they may interpret what they say.'",
+                bibleVerse2: "1 Corinthians 14:27: 'If anyone speaks in a tongue, two—or at the most three—should speak, one at a time, and someone must interpret.'"
+            },
+            "Wisdom": {
+                description: "You are granted exceptional insight into how to apply spiritual truth to complex, specific situations and dilemmas.",
+                prevalence: "6%",
+                bibleCharacter: "Solomon",
+                bibleVerse: "1 Kings 3:28: '...they saw that he had wisdom from God to administer justice.'",
+                bibleVerse2: "1 Corinthians 12:8: 'To one there is given through the Spirit a message of wisdom, to another a message of knowledge by means of the same Spirit,'"
+            },
+            "Knowledge": {
+                description: "You are given the capacity to discover, analyze, and systematize information and ideas that are critical to the growth of the church.",
+                prevalence: "7%",
+                bibleCharacter: "Luke",
+                bibleVerse: "Luke 1:3-4: '...it seemed good also to me to write an orderly account for you, most excellent Theophilus, so that you may know the certainty of the things you have been taught.'",
+                bibleVerse2: "1 Corinthians 12:8: 'To one there is given through the Spirit a message of wisdom, to another a message of knowledge by means of the same Spirit,'"
+            },
+            "Faith": {
+                description: "You possess extraordinary confidence in God's power and promises, enabling you to step out and accomplish great things for Him against all apparent odds.",
+                prevalence: "5%",
+                bibleCharacter: "Abraham",
+                bibleVerse: "Romans 4:20-21: '...was strengthened in his faith and gave glory to God, being fully persuaded that God had power to do what he had promised.'",
+                bibleVerse2: "1 Corinthians 12:9: 'to another faith by the same Spirit, to another gifts of healing by that one Spirit,'"
+            },
+            "Discernment": {
+                description: "You have the power to clearly distinguish between truth and error, especially regarding the motives and spirits behind a person or situation.",
+                prevalence: "11%",
+                bibleCharacter: "Paul",
+                bibleVerse: "Acts 16:18: 'Finally, Paul became so annoyed that he turned around and said to the spirit, “In the name of Jesus Christ I command you to come out of her!” At that moment the spirit left her.'",
+                bibleVerse2: "1 Corinthians 12:10: '...to another miraculous powers, to another prophecy, to another distinguishing between spirits, to another speaking in different kinds of tongues, and to still another the interpretation of tongues.'"
+            },
+            "Helps": {
+                description: "Your gift is the ability to assist others in their ministry and tasks with efficiency and effectiveness, freeing them up to focus on their primary callings.",
+                prevalence: "20%",
+                bibleCharacter: "Timothy",
+                bibleVerse: "Philippians 2:20-22: 'I have no one else like him, who will show genuine concern for your welfare. ... as a son with a father he has served with me in the work of the gospel.'",
+                bibleVerse2: "Romans 16:2: 'I ask you to receive her in the Lord in a way worthy of his people and to give her any help she may need from you, for she has been the benefactor of many people, including me.'"
+            },
+            "Administration": {
+                description: "You are skilled at planning, organizing, and directing groups of people to accomplish specific goals for the ministry or church.",
+                prevalence: "13%",
+                bibleCharacter: "Nehemiah",
+                bibleVerse: "Nehemiah 2:17-18: 'Come, let us rebuild the wall of Jerusalem... I also told them about the gracious hand of my God on me... They replied, “Let us start rebuilding.”'",
+                bibleVerse2: "1 Corinthians 12:28: '...then miracles, then gifts of healing, of helping, of guidance, and of different kinds of tongues.' (The Greek word for 'guidance' often refers to governing or administration.)"
+            }
+        };
 
         // --- Global State ---
         let db;
@@ -52,9 +195,18 @@
         const userIdDisplay = document.getElementById('user-id-display');
 
         // --- Config Variables (Accessed from window global due to config.js) ---
-        // We ensure a fallback if config.js failed to load
+        // We use a safe check against the global window object.
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : '{}');
+        
+        let firebaseConfig;
+        try {
+            // Safely attempt to parse the string from the global variable
+            const configString = typeof window.__firebase_config !== 'undefined' ? window.__firebase_config : '{}';
+            firebaseConfig = JSON.parse(configString);
+        } catch (e) {
+            console.error("Failed to parse Firebase config string. Using empty config.", e);
+            firebaseConfig = {};
+        }
         const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : null;
 
         // --- Utility Functions ---
@@ -109,9 +261,22 @@
 
         // Renders the current question and ensures the input is focused and selected.
         const updateUIAndFocus = () => {
-            if (currentQuestion > QUESTION_COUNT) {
+            // Check if assessment is complete
+            let answeredCount = currentAnswers.filter(a => a !== null).length - 1; // -1 for index 0
+            if (answeredCount === QUESTION_COUNT) {
                 renderResults();
                 return;
+            }
+
+            // Find the next unanswered question if currentQuestion points to an answered one
+            while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) {
+                currentQuestion++;
+            }
+            
+            // If we moved past 200 after the loop, render results
+            if (currentQuestion > QUESTION_COUNT) {
+                 renderResults();
+                 return;
             }
             
             // 1. Update Question Text
@@ -124,7 +289,6 @@
             scoreInput.select(); 
             
             // 3. Update Progress Bar
-            let answeredCount = currentAnswers.filter(a => a !== null).length - 1; // -1 for index 0
             const progress = (answeredCount / QUESTION_COUNT) * 100;
             progressText.textContent = `Progress: ${answeredCount}/${QUESTION_COUNT} (${progress.toFixed(0)}%)`;
             progressBar.style.width = `${progress}%`;
@@ -151,11 +315,8 @@
             currentAnswers[currentQuestion] = score;
             saveProgress(currentAnswers); // Save immediately
 
-            // Move to the next unanswered question
+            // Move to the next question (updateUIAndFocus handles skipping answered ones)
             currentQuestion++;
-            while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) {
-                currentQuestion++;
-            }
             
             updateUIAndFocus();
         });
@@ -182,26 +343,66 @@
         const renderResults = () => {
             const sortedGifts = calculateResults();
             const topGift = sortedGifts[0];
+            
+            // Get details for the top gift
+            const details = GIFT_DETAILS[topGift.gift] || { 
+                description: "No description available.", 
+                prevalence: "N/A", 
+                bibleCharacter: "A faithful servant",
+                bibleVerse: "Consult your Bible for examples of this gift in action.",
+                bibleVerse2: "Consult your Bible for examples of this gift in action." // Fallback for new verse
+            };
 
             // Show Results View and hide Assessment View
             assessmentView.classList.add('hidden');
             resultsView.classList.remove('hidden');
 
-            // 1. Top Gift Display
+            // 1. Top Gift Display - UPDATED TO INCLUDE TWO VERSES
             topGiftDisplay.innerHTML = `
-                <h4 class="text-xl font-semibold mb-1">Your Primary Gift</h4>
+                <h4 class="text-xl font-semibold mb-1 text-gray-700">Your Primary Gift</h4>
                 <h1 class="text-5xl font-extrabold text-green-700">${topGift.gift}</h1>
-                <p class="text-lg mt-2">Score: <b>${topGift.score}</b></p>
+                <p class="text-lg mt-2 mb-4">Score: <b>${topGift.score}</b></p>
+                
+                <!-- Description Block -->
+                <div class="bg-green-100 p-4 rounded-xl border border-green-300 shadow-inner mb-6">
+                    <p class="text-gray-700 font-medium text-lg">${details.description}</p>
+                    <p class="text-sm text-green-800 mt-3 font-semibold">
+                        (Approx. ${details.prevalence} of Christians identify with this gift.)
+                    </p>
+                </div>
+                
+                <!-- Character & Verse Block - Now displaying two verses -->
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200 shadow-md space-y-4">
+                    <p class="text-xl font-bold text-indigo-700 mb-2">Biblical Insight: ${details.bibleCharacter}</p>
+                    
+                    <div>
+                        <p class="font-semibold text-indigo-600">Primary Reference:</p>
+                        <p class="mt-1 text-gray-600 italic leading-relaxed">"${details.bibleVerse}"</p>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-indigo-600">Secondary Reference:</p>
+                        <p class="mt-1 text-gray-600 italic leading-relaxed">"${details.bibleVerse2}"</p>
+                    </div>
+                </div>
             `;
 
             // 2. Top Four List
             topFourList.innerHTML = '';
             sortedGifts.slice(0, 4).forEach((item, index) => {
-                const rankClass = index === 0 ? 'bg-yellow-200 font-bold' : 'bg-white';
+                const itemDetails = GIFT_DETAILS[item.gift] || { prevalence: "N/A" };
+                const rankClass = index === 0 ? 'bg-yellow-100 font-bold border-yellow-400' : 'bg-white border-gray-200';
+                
                 topFourList.innerHTML += `
-                    <div class="flex justify-between items-center p-3 rounded-lg shadow-sm border border-gray-200 ${rankClass}">
-                        <span class="text-lg">#${index + 1}: ${item.gift}</span>
-                        <span class="text-xl text-indigo-600">${item.score}</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 rounded-lg shadow-md border-2 ${rankClass}">
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xl font-extrabold text-indigo-600 w-8">#${index + 1}</span>
+                            <span class="text-xl text-gray-800">${item.gift}</span>
+                        </div>
+                        <div class="mt-2 sm:mt-0 flex items-center space-x-4">
+                            <span class="text-sm text-gray-500">Prevalence: ${itemDetails.prevalence}</span>
+                            <span class="text-2xl font-bold text-green-700">Score: ${item.score}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -238,7 +439,9 @@
             if (confirmed) {
                 currentAnswers = new Array(QUESTION_COUNT + 1).fill(null);
                 currentQuestion = 1;
-                saveProgress(currentAnswers); // Save empty array to clear Firestore
+                if (isFirebaseReady) {
+                    saveProgress(currentAnswers); // Save empty array to clear Firestore
+                }
                 showStatus("Assessment reset. Ready to start!", false);
                 updateUIAndFocus();
             }
@@ -246,8 +449,11 @@
 
         // --- Firebase Initialization ---
         const initializeFirebase = async () => {
-            if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId) {
-                console.error("Firebase config is missing or invalid. Data persistence is disabled.");
+            const isConfigEmpty = !firebaseConfig || Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId;
+
+            if (isConfigEmpty) {
+                console.warn("Firebase config is missing or invalid. Data persistence is DISABLED.");
+                showStatus("Error: Cloud data persistence is disabled (missing Firebase config). App will run locally.", true);
                 userIdDisplay.textContent = "User ID: Persistence Disabled";
                 // Fallback: Start the app without persistence
                 window.app.loadProgressAndStart();
@@ -258,7 +464,7 @@
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
-
+                
                 // Authenticate user
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -282,8 +488,9 @@
                 });
 
             } catch (error) {
+                // This catch block handles network errors or configuration errors during init/auth
                 console.error("Error initializing or authenticating Firebase:", error);
-                showStatus("Critical Error: Could not initialize Firebase.", true);
+                showStatus("Critical Error: Could not initialize Firebase. Check console for details.", true);
                 isFirebaseReady = false;
                 userIdDisplay.textContent = "User ID: Auth Error";
                 // Fallback: Start the app without persistence
@@ -343,7 +550,7 @@
             <h2 class="text-4xl font-extrabold text-center text-green-700">Assessment Complete!</h2>
             
             <div id="top-gift-display" class="bg-white p-8 rounded-2xl border-4 border-green-500 shadow-xl text-center">
-                <!-- Top gift will be displayed here -->
+                <!-- Top gift, score, description, prevalence, character, and two verses will be displayed here -->
             </div>
 
             <div id="top-four-display" class="bg-white p-6 rounded-xl shadow-md">
