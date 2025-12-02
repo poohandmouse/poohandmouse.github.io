@@ -3,245 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Spiritual Gifts Assessment</title>
+    <title>Spiritual Gifts – Honest Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        input[type="number"] { font-size: 16px; } /* Stops iOS zoom */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-50 via-white to-green-50 min-h-screen">
-
-    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-4">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-center text-white">
-            <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">Spiritual Gifts Assessment</h1>
-            <p class="mt-3 text-indigo-100 text-sm md:text-base" id="user-id-display">Offline mode • Local only</p>
+<body class="bg-gradient-to-b from-blue-50 to-indigo-100 min-h-screen font-sans">
+<div class="max-w-2xl mx-auto p-6">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-indigo-600 to-blue-700 p-8 text-white text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2">Discover Your Spiritual Gift</h1>
+            <p class="text-indigo-100 text-lg">28 Gifts • 140 + 5 Openness Questions</p>
+            <p class="text-sm mt-4 opacity-90" id="user-id-display">Offline mode • Local only</p>
         </div>
 
-        <div class="p-6 md:p-8 space-y-10">
-            <!-- Assessment View -->
-            <div id="assessment-view">
-                <div id="question-area" class="bg-indigo-50 rounded-2xl p-8 text-center border-2 border-indigo-200">
-                    <h3 class="text-2xl md:text-3xl font-bold text-indigo-800">Question 1 / 200</h3>
-                    <p class="text-base md:text-lg mt-3 text-gray-600">0 = Not at all • 5 = Very Strongly</p>
-                </div>
-
-                <form id="score-form" class="mt-8 flex flex-col gap-6 items-center">
-                    <!-- BIG on desktop, perfect on mobile -->
-                    <input type="number" id="score-input" min="0" max="5" value="0"
-                           class="w-40 h-40 md:w-56 md:h-56 text-8xl md:text-9xl font-extrabold text-center rounded-2xl border-4 border-indigo-300 focus:border-indigo-600 outline-none shadow-2xl"
-                           oninput="this.value = Math.max(0, Math.min(5, parseInt(this.value)||0))">
-                    <button type="submit"
-                            class="w-full max-w-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xl md:text-2xl py-6 px-8 rounded-2xl shadow-xl transition">
-                        Submit → (Enter)
-                    </button>
-                </form>
-
-                <div class="mt-8">
-                    <p id="progress-text" class="text-right text-gray-600 font-medium text-sm md:text-lg">Progress: 0/200 (0%)</p>
-                    <div class="w-full bg-gray-200 rounded-full h-6 mt-2 overflow-hidden">
-                        <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full transition-all duration-500" style="width:0%"></div>
-                    </div>
-                </div>
+        <!-- Assessment -->
+        <div id="assessment-view" class="p-8 space-y-10">
+            <div class="text-center">
+                <div class="text-6xl font-bold text-indigo-600 mb-4" id="current-question-num">1</div>
+                <p class="text-gray-600 text-lg">of 145 questions</p>
             </div>
-
-            <!-- Results View -->
-            <div id="results-view" class="hidden space-y-10">
-                <h2 class="text-4xl md:text-5xl font-extrabold text-center text-green-600">Assessment Complete!</h2>
-                <div id="top-gift-display" class="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-3xl border-4 border-green-400"></div>
-                <div class="bg-white p-8 rounded-3xl shadow-xl">
-                    <h3 class="text-3xl font-bold mb-6 text-center">Your Top 4 Gifts</h3>
-                    <div id="top-four-list" class="space-y-4"></div>
+            <div id="question-text" class="bg-blue-50 rounded-2xl p-8 text-xl text-gray-800 leading-relaxed border-2 border-blue-200">
+                Loading your first question...
+            </div>
+            <form id="score-form" class="space-y-8">
+                <div class="flex justify-center">
+                    <input type="number" id="score-input" min="0" max="5"
+                           class="w-56 h-56 text-9xl font-extrabold text-center rounded-3xl border-4 border-indigo-400 focus:border-indigo-600 outline-none shadow-2xl bg-white md:w-72 md:h-72 md:text-[12rem]"
+                           placeholder="?" autocomplete="off">
                 </div>
-                <button onclick="window.app.resetAssessment()"
-                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xl md:text-2xl py-6 rounded-2xl shadow-xl transition">
-                    Start New Assessment
+                <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div class="text-left">0 = Never</div>
+                    <div class="text-right">5 = Always</div>
+                    <div class="text-left col-span-2 text-center text-gray-500">1 = Rarely • 2 = Sometimes • 3 = Often • 4 = Very Often</div>
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold text-2xl py-6 rounded-2xl shadow-xl transition transform hover:scale-105">
+                    Next Question
                 </button>
+            </form>
+            <div class="mt-8">
+                <div class="text-right text-gray-600 font-medium mb-2" id="progress-text">0%</div>
+                <div class="w-full bg-gray-300 rounded-full h-6 overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-blue-500 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
             </div>
+        </div>
 
-            <div id="status-message" class="fixed bottom-6 left-1/2 -translate-x-1/2 max-w-lg w-full p-4 rounded-lg text-center font-medium hidden z-50"></div>
+        <!-- Results -->
+        <div id="results-view" class="hidden p-8 space-y-12">
+            <h2 class="text-5xl font-bold text-center text-green-600 mb-8">Your Spiritual Gifts Profile</h2>
+            <div id="top-gift-display" class="bg-gradient-to-br from-green-50 to-emerald-100 rounded-3xl p-10 border-4 border-green-400 shadow-2xl"></div>
+            <div class="space-y-8" id="top-gifts-list"></div>
+            <div class="bg-purple-50 rounded-3xl p-8 border-4 border-purple-400">
+                <h3 class="text-3xl font-bold text-purple-900 mb-6">Manifestation-Gift Openness</h3>
+                <div id="manifestation-openness" class="space-y-4 text-lg"></div>
+            </div>
+            <button onclick="location.reload()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xl py-6 rounded-2xl shadow-xl">
+                Take Assessment Again
+            </button>
         </div>
     </div>
+</div>
 
-    <script src="./config.js"></script>
+<script src="./config.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    const GIFTS = [
+        "Administration","Apostleship","Craftsmanship","Creative Communication","Discernment of Spirits",
+        "Encouragement","Evangelism","Faith","Giving","Healing","Helps/Service","Hospitality","Intercession",
+        "Interpretation of Tongues","Knowledge","Leadership","Mercy","Miracles","Music/Worship","Pastoral Care",
+        "Prophecy","Service","Shepherding","Teaching","Tongues","Wisdom","Witnessing","Writing"
+    ];
 
-        const CATEGORIES = ["Apostleship","Prophecy","Evangelism","Shepherding","Teaching","Serving","Exhortation","Giving","Giving Aid","Compassion","Healing","Working Miracles","Tongues","Interpretation of Tongues","Wisdom","Knowledge","Faith","Discernment","Helps","Administration"];
-        const QUESTION_COUNT = 200;
+    // 135 regular questions (5 × 27 — Service is duplicate of Helps)
+    const BASE_QUESTIONS = [
+        // Administration (5)
+        "I excel at organizing people and resources for ministry","I naturally create systems so things run smoothly","People trust me to manage projects and details","I bring order out of chaos in church settings","Deadlines and planning energize me",
+        // Apostleship
+        "I feel called to start new churches or ministries","I thrive in unreached or pioneering environments","I adapt quickly to new cultures","God has used me to birth new works","I’m drawn to places where the gospel isn’t yet known",
+        // Craftsmanship
+        "I love building or creating things that glorify God","My artistic/technical skills bless the church","I enjoy designing banners, fixing facilities, or creating visuals","People comment on the excellence of what I make","I sense God’s pleasure when I create beautifully",
+        // Creative Communication
+        "I express God’s truth through art, writing, drama, or media","I can make deep theology clear and beautiful","My creative work moves people emotionally and spiritually","God speaks through my writing or designs","Others grow closer to Jesus because of my creativity",
+        // Discernment of Spirits
+        "I quickly sense when something is not from God","I can distinguish truth from error in teaching","I feel physical reactions around demonic influence","God has used me to expose deception","People ask me to test spiritual experiences",
+        // Encouragement
+        "People say my words build them up","I love calling out God-given potential in others","I comfort the discouraged effectively","My presence brings hope in hard times","I write notes or texts that strengthen faith",
+        // Evangelism
+        "Unbelievers open up to me easily","I regularly lead people to Christ","Sharing the gospel feels natural and joyful","Strangers trust me with their spiritual questions","I feel deep burden for the lost",
+        // Faith
+        "I pray expecting God-sized answers","I trust God in impossible situations","Others are strengthened by my faith","I step out when God speaks, even if it looks risky","God has answered dramatic prayers through me",
+        // Giving
+        "I give generously and cheerfully","I look for needs I can meet financially or practically","I live simply so I can give more","God provides supernaturally so I can bless others","I often give anonymously",
+        // Healing
+        "People experience healing when I pray","I feel compassion surge when praying for the sick","I regularly pray for physical, emotional, or spiritual healing","God has used me as a channel of healing","I believe God heals today",
+        // Helps/Service
+        "I love practical, behind-the-scenes work","I notice needs others overlook","Serving without recognition brings me joy","I free leaders by handling details","I serve gladly in unseen roles",
+        // Hospitality
+        "My home is always open to others","I make guests feel truly welcome","Hosting events or people energizes me","People relax and open up in my space","I love feeding and housing God’s people",
+        // Intercession
+        "I pray for hours with passion","I wake up burdened to pray","Prayer breakthroughs follow my intercession","I carry prayer lists and see answers","I sense spiritual warfare in prayer",
+        // Interpretation of Tongues
+        "I often understand the meaning of tongues messages","God gives me interpretation in meetings","The church is edified when I interpret","I desire this gift for the Body’s benefit","I have interpreted accurately before",
+        // Knowledge
+        "God reveals facts I couldn’t know naturally","I receive supernatural insight in prayer","God shows me hidden things about people/situations","My knowledge gifts help solve problems","People are amazed at what God reveals",
+        // Leadership
+        "People naturally follow my direction","I cast vision others get excited about","I guide groups toward God’s purposes","I delegate well and empower others","Teams accomplish more under my leadership",
+        // Mercy
+        "My heart breaks for the suffering","I visit hospitals, prisons, nursing homes","I forgive easily and completely","I weep with those who weep","People feel Jesus’ love through me",
+        // Miracles
+        "God has performed undeniable miracles through my prayers","Nature or circumstances shift when I pray","I expect supernatural intervention","People are delivered or healed when I pray with authority","I’ve seen creative miracles",
+        // Music/Worship
+        "Leading worship brings God’s presence strongly","My music moves people to repentance or joy","I write songs or play for God’s glory","The atmosphere shifts when I lead worship","Worship is my primary calling",
+        // Pastoral Care
+        "I nurture spiritual growth in individuals","People trust me with deep wounds","I disciple one-on-one or small groups","I restore those who’ve fallen away","I carry people’s burdens to Jesus",
+        // Prophecy
+        "God speaks timely words through me","My words bring conviction or encouragement","I sense what God is saying now to the church","Prophecy through me builds up others","I speak God’s heart accurately",
+        // Service (duplicate of Helps — kept for compatibility)
+        "I serve joyfully wherever needed","Practical service is my love language","I free others for ministry by serving","Serving is worship to me","I find joy in unseen tasks",
+        // Shepherding
+        "I protect and guide God’s people","I know when sheep are hurting","I restore straying believers","Small group ministry is my heartbeat","I have a pastor’s heart",
+        // Teaching
+        "I make Scripture clear and life-changing","People grow under my teaching","I study deeply to teach accurately","I love preparing lessons","Truth through me transforms lives",
+        // Tongues
+        "I pray or sing in tongues regularly","Tongues is my personal prayer language","God gives me messages in tongues","Tongues strengthens my spirit","I desire tongues for edification",
+        // Wisdom
+        "God gives me supernatural solutions","I know what to do in crises","My counsel brings breakthrough","People seek me for godly wisdom","God’s wisdom flows through me",
+        // Witnessing
+        "My story opens doors for the gospel","People are drawn to Jesus through my testimony","I naturally share what God has done","My life witnesses even silently","Unbelievers listen when I speak",
+        // Writing
+        "God speaks through my writing","My words in print impact lives","I clarify truth through writing","Writing is my main ministry tool","People grow through what I write"
+    ];
 
-        const GIFT_DETAILS = {
-            "Apostleship": { excitement: "You are a fearless trailblazer! God has called you to plant churches and launch ministries in unreached places — just like Paul who turned the Roman world upside down for Jesus!", prevalence: "1%", character: "Paul", how: "Paul pioneered the Gentile mission, planted dozens of churches across the empire, and fearlessly preached Christ where His name had never been heard.", verse1: "Romans 15:20 (NIV)<br><i>It has always been my ambition to preach the gospel where Christ was not known, so that I would not be building on someone else’s foundation.</i>", verse2: "Acts 20:24 (NIV)<br><i>However, I consider my life worth nothing to me; my only aim is to finish the race and complete the task the Lord Jesus has given me—the task of testifying to the good news of God’s grace.</i>" },
-            "Prophecy": { excitement: "You carry God’s megaphone! When you speak, heaven breaks in — people repent, nations tremble, and truth pierces darkness!", prevalence: "3%", character: "Jeremiah", how: "Known as the weeping prophet, Jeremiah boldly warned Judah of coming judgment while calling them to repentance, even when it cost him everything.", verse1: "Jeremiah 1:9-10 (NIV)<br><i>Then the Lord reached out his hand and touched my mouth and said to me, “I have put my words in your mouth. See, today I appoint you over nations and kingdoms to uproot and tear down, to destroy and overthrow, to build and to plant.”</i>", verse2: "Jeremiah 20:9 (NIV)<br><i>But if I say, “I will not mention his word or speak anymore in his name,” his word is in my heart like a fire, a fire shut up in my bones. I am weary of holding it in; indeed, I cannot.</i>" },
-            "Evangelism": { excitement: "You are a walking revival! Strangers become family in Christ because your passion for the lost is contagious and unstoppable!", prevalence: "12%", character: "Philip", how: "Philip preached to crowds in Samaria and then explained the gospel one-on-one to the Ethiopian eunuch, leading an entire nation’s first convert.", verse1: "Acts 8:35-38 (NIV)<br><i>Then Philip began with that very passage of Scripture and told him the good news about Jesus... Then both Philip and the eunuch went down into the water and Philip baptized him.</i>", verse2: "Acts 8:12 (NIV)<br><i>But when they believed Philip as he proclaimed the good news of the kingdom of God and the name of Jesus Christ, they were baptized, both men and women.</i>" },
-            "Shepherding": { excitement: "You have the heart of the Good Shepherd! People heal, grow, and flourish under your loving, protective care — just like David did for Israel and his literal sheep!", prevalence: "10%", character: "David", how: "As a teenage shepherd, David risked his life fighting lions and bears to protect his flock — the same fierce love he later showed as king caring for God’s people.", verse1: "1 Samuel 17:34-35 (NIV)<br><i>But David said... “Your servant has been keeping his father’s sheep. When a lion or a bear came and carried off a sheep from the flock, I went after it, struck it and rescued the sheep from its mouth.”</i>", verse2: "Psalm 78:70-72 (NIV)<br><i>He chose David his servant... to be the shepherd of his people Jacob, of Israel his inheritance. And David shepherded them with integrity of heart; with skillful hands he led them.</i>" },
-            "Teaching": { excitement: "You illuminate God’s Word like no one else! Dry truth becomes living fire — people leave transformed and equipped to change the world!", prevalence: "15%", character: "Ezra", how: "Ezra devoted himself to studying, obeying, and teaching God’s Law, leading an entire nation back to scriptural faithfulness after exile.", verse1: "Ezra 7:10 (NIV)<br><i>For Ezra had devoted himself to the study and observance of the Law of the Lord, and to teaching its decrees and laws in Israel.</i>", verse2: "Nehemiah 8:8 (NIV)<br><i>They read from the Book of the Law of God, making it clear and giving the meaning so that the people understood what was being read.</i>" },
-            "Serving": { excitement: "You are the backbone of every move of God! Your joyful, behind-the-scenes service makes miracles possible and leaders free to soar!", prevalence: "25%", character: "Onesiphorus", how: "He searched hard for Paul in Rome, refreshed him in prison, and was not ashamed of his chains — a perfect picture of faithful, practical service.", verse1: "2 Timothy 1:16-18 (NIV)<br><i>May the Lord show mercy to the household of Onesiphorus, because he often refreshed me and was not ashamed of my chains... he searched hard for me until he found me.</i>", verse2: "Galatians 6:2 (NIV)<br><i>Carry each other’s burdens, and in this way you will fulfill the law of Christ.</i>" },
-            "Exhortation": { excitement: "You ignite courage in broken hearts! One word from you and people rise up, shake off fear, and run harder after Jesus!", prevalence: "18%", character: "Barnabas", how: "He sold his land to support the church, vouched for the converted Saul when everyone feared him, and restored John Mark after failure.", verse1: "Acts 11:23-24 (NIV)<br><i>When he arrived and saw what the grace of God had done, he was glad and encouraged them all to remain true to the Lord with all their hearts. He was a good man, full of the Holy Spirit and faith...</i>", verse2: "Acts 15:37-39 (NIV)<br><i>Barnabas wanted to take John, also called Mark... They had such a sharp disagreement that they parted company. (Later Paul reconciled — Barnabas never gave up on Mark!)</i>" },
-            "Giving": { excitement: "Your generosity shifts atmospheres and funds revival! You give with wild, hilarious joy and watch God multiply it a hundredfold!", prevalence: "8%", character: "The Widow of Zarephath", how: "In famine, she gave her very last meal to Elijah — trusting God — and her jar of flour and jug of oil never ran out until the drought ended.", verse1: "1 Kings 17:13-16 (NIV)<br><i>Elijah said to her, “Don’t be afraid... first make a small loaf of bread for me from what you have...” She went away and did as Elijah had told her. So there was food every day... the jar of flour was not used up and the jug of oil did not run dry.</i>", verse2: "2 Corinthians 9:7 (NIV)<br><i>Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver.</i>" },
-            "Giving Aid": { excitement: "You see needs and meet them before anyone asks! You are the practical, wise helper that keeps God’s work running smoothly!", prevalence: "10%", character: "Joseph (son of Jacob)", how: "He administered Egypt’s grain during famine, organized storage for seven years, and saved millions — including his own family — from starvation.", verse1: "Genesis 41:48-49 (NIV)<br><i>Joseph collected all the food produced in those seven years of abundance in Egypt and stored it in the cities... Joseph stored up huge quantities of grain, like the sand of the sea.</i>", verse2: "Genesis 47:12 (NIV)<br><i>Joseph also provided his father and his brothers and all his father’s household with food, according to the number of their children.</i>" },
-            "Compassion": { excitement: "Your heart breaks with Jesus’ heart! You run toward the hurting and bring healing mercy that changes lives forever!", prevalence: "22%", character: "The Good Samaritan", how: "He crossed racial and religious barriers to rescue a beaten stranger, bandaged his wounds, paid for his care, and followed up — the ultimate picture of active mercy.", verse1: "Luke 10:33-35 (NIV)<br><i>But a Samaritan... when he saw him, he took pity on him. He went to him and bandaged his wounds, pouring on oil and wine. Then he put the man on his own donkey, brought him to an inn and took care of him... “Look after him,” he said, “and when I return, I will reimburse you...”</i>", verse2: "Colossians 3:12 (NIV)<br><i>Therefore, as God’s chosen people... clothe yourselves with compassion, kindness, humility, gentleness and patience.</i>" },
-            "Healing": { excitement: "Miracles of restoration follow you! The sick recover and the broken are made whole because God’s healing power flows through your faith and prayer!", prevalence: "2%", character: "Peter", how: "Peter’s shadow healed the sick, he raised Tabitha from the dead, and thousands were healed through his ministry.", verse1: "Acts 5:15-16 (NIV)<br><i>As a result, people brought the sick into the streets and laid them on beds and mats so that at least Peter’s shadow might fall on some of them as he passed by... and all of them were healed.</i>", verse2: "Acts 9:40-41 (NIV)<br><i>Peter sent them all out of the room; then he got down on his knees and prayed... “Tabitha, get up.” She opened her eyes... He took her by the hand and helped her to her feet.</i>" },
-            "Working Miracles": { excitement: "You walk in raw supernatural power! Nature obeys, demons flee, and heaven invades earth when you step out in faith!", prevalence: "1%", character: "Moses", how: "He turned the Nile to blood, parted the Red Sea, brought water from a rock, and led Israel with signs and wonders for 40 years.", verse1: "Exodus 14:21-22 (NIV)<br><i>Then Moses stretched out his hand over the sea, and all that night the Lord drove the sea back with a strong east wind and turned it into dry land. The waters were divided, and the Israelites went through the sea on dry ground...</i>", verse2: "Deuteronomy 34:11-12 (NIV)<br><i>...no prophet has risen in Israel like Moses, whom the Lord knew face to face, who did all those signs and wonders the Lord sent him to do...</i>" },
-            "Tongues": { excitement: "You speak heaven’s language! Your prayer life is turbo-charged and you release God’s power in ways no one else can!", prevalence: "4%", character: "The 120 at Pentecost", how: "They spoke in tongues as the Spirit enabled them — and 3,000 souls were saved in one day!", verse1: "Acts 2:4 (NIV)<br><i>All of them were filled with the Holy Spirit and began to speak in other tongues as the Spirit enabled them.</i>", verse2: "Acts 2:11 (NIV)<br><i>...we hear them declaring the wonders of God in our own tongues!</i>" },
-            "Interpretation of Tongues": { excitement: "You unlock heaven’s secrets for the whole church! When you interpret, everyone is built up and God gets the glory!", prevalence: "2%", character: "The Corinthian believers (instructed by Paul)", how: "Paul taught that interpretation must accompany tongues so the church is edified, not confused.", verse1: "1 Corinthians 14:13 (NIV)<br><i>For this reason the one who speaks in a tongue should pray that they may interpret what they say.</i>", verse2: "1 Corinthians 14:27-28 (NIV)<br><i>If anyone speaks in a tongue... someone must interpret. If there is no interpreter, the speaker should keep quiet in the church...</i>" },
-            "Wisdom": { excitement: "You solve the unsolvable! Leaders and kings seek your counsel because God gives you divine strategies that change everything!", prevalence: "6%", character: "Solomon", how: "When two women claimed the same baby, Solomon’s wise (and shocking) judgment revealed the true mother and stunned the nation.", verse1: "1 Kings 3:28 (NIV)<br><i>When all Israel heard the verdict the king had given, they held the king in awe, because they saw that he had wisdom from God to administer justice.</i>", verse2: "1 Kings 4:34 (NIV)<br><i>From all nations people came to listen to Solomon’s wisdom, sent by all the kings of the world, who had heard of his wisdom.</i>" },
-            "Knowledge": { excitement: "God downloads hidden revelation straight to you! Secrets, mysteries, and deep truths are unveiled when you seek Him!", prevalence: "7%", character: "Daniel", how: "He revealed Nebuchadnezzar’s forgotten dream and its meaning — something no wise man on earth could do.", verse1: "Daniel 2:22-23 (NIV)<br><i>He reveals deep and hidden things; he knows what lies in darkness... I thank and praise you, God... You have made known to me what we asked of you...</i>", verse2: "Daniel 2:47 (NIV)<br><i>The king said to Daniel, “Surely your God is the God of gods and the Lord of kings and a revealer of mysteries...”</i>" },
-            "Faith": { excitement: "You move mountains and birth the impossible! When everyone else sees giants, you see God — and miracles follow your unshakable trust!", prevalence: "5%", character: "Rahab", how: "A Canaanite prostitute believed Israel’s God was the true God, hid the spies at risk of her life, and was spared when Jericho fell — she even joined Jesus’ lineage!", verse1: "Joshua 2:11 (NIV)<br><i>When we heard of it, our hearts melted in fear... for the Lord your God is God in heaven above and on the earth below.</i>", verse2: "Hebrews 11:31 (NIV)<br><i>By faith the prostitute Rahab, because she welcomed the spies, was not killed with those who were disobedient.</i>" },
-            "Discernment": { excitement: "You see straight through deception! Nothing fake gets past you — you protect God’s people like a spiritual watchman on the wall!", prevalence: "11%", character: "Elisha", how: "Elisha knew the secret plans of the king of Aram whispered in his bedroom and warned Israel every time.", verse1: "2 Kings 6:12 (NIV)<br><i>“None of us, my lord the king,” said one of his officers, “but Elisha, the prophet in Israel, tells the king of Israel the very words you speak in your bedroom.”</i>", verse2: "1 Corinthians 12:10 (NIV)<br><i>to another distinguishing between spirits...</i>" },
-            "Helps": { excitement: "You multiply ministry! Leaders flourish because you joyfully carry the load so they can focus on their calling!", prevalence: "20%", character: "Joshua", how: "Joshua served Moses faithfully from youth — carrying his gear, staying in the Tent of Meeting, and eventually leading Israel into the Promised Land.", verse1: "Exodus 33:11 (NIV)<br><i>The Lord would speak to Moses face to face, as one speaks to a friend. Then Moses would return to the camp, but his young aide Joshua son of Nun did not leave the tent.</i>", verse2: "Exodus 24:13 (NIV)<br><i>Then Moses set out with Joshua his aide, and Moses went up on the mountain of God.</i>" },
-            "Administration": { excitement: "You turn vision into reality! Chaos becomes kingdom order because you organize people and resources with excellence!", prevalence: "13%", character: "Jethro’s advice to Moses → Moses implemented it", how: "Moses was burning out judging Israel alone; Jethro taught him to delegate, appoint leaders of thousands, hundreds, fifties, and tens — saving his life and the nation.", verse1: "Exodus 18:21-23 (NIV)<br><i>But select capable men from all the people... have them serve as judges for the people at all times... That will make your load lighter... If you do this and God so commands, you will be able to stand the strain, and all these people will go home satisfied.</i>", verse2: "Exodus 18:25-26 (NIV)<br><i>He chose capable men from all Israel and made them leaders of the people... They served as judges for the people at all times.</i>" }
-        };
+    // Final 5 Manifestation-Openness questions
+    const OPENNESS_QUESTIONS = [
+        "I am open and eager for God to heal people through my prayers, even if it happens rarely",
+        "I long to see God do undeniable miracles through me whenever He chooses",
+        "I want God to give me timely prophetic words or words of knowledge for others",
+        "I desire to discern spirits accurately to protect and build the church",
+        "I am open to speaking or praying in tongues and interpreting when the Spirit prompts"
+    ];
 
-        let db = null, auth = null, userId = null, isFirebaseReady = false;
-        let currentAnswers = new Array(QUESTION_COUNT + 1).fill(null);
-        let currentQuestion = 1;
+    const ALL_QUESTIONS = [...BASE_QUESTIONS, ...OPENNESS_QUESTIONS];
+    const TOTAL_QUESTIONS = ALL_QUESTIONS.length; // 140
 
-        const el = {
-            questionArea: document.getElementById('question-area'),
-            scoreForm: document.getElementById('score-form'),
-            scoreInput: document.getElementById('score-input'),
-            progressText: document.getElementById('progress-text'),
-            progressBar: document.getElementById('progress-bar'),
-            assessmentView: document.getElementById('assessment-view'),
-            resultsView: document.getElementById('results-view'),
-            topGiftDisplay: document.getElementById('top-gift-display'),
-            topFourList: document.getElementById('top-four-list'),
-            statusMessage: document.getElementById('status-message'),
-            userIdDisplay: document.getElementById('user-id-display')
-        };
+    // Shuffling: 5 rounds of 27 gifts + 5 openness at the end
+    const shuffledIndices = [];
+    for (let r = 0; r < 5; r++) for (let g = 0; g < 27; g++) shuffledIndices.push(g * 5 + r);
+    for (let i = 0; i < 5; i++) shuffledIndices.push(135 + i);
+    const QUESTIONS = shuffledIndices.map(i => ALL_QUESTIONS[i]);
 
-        const appId = window.__app_id || 'local';
-        let firebaseConfig = {};
-        if (typeof window.__firebase_config === 'string' && window.__firebase_config.trim() !== '' && window.__firebase_config !== '{}') {
-            try { firebaseConfig = JSON.parse(window.__firebase_config); } catch(e) {}
-        }
+    let currentAnswers = new Array(TOTAL_QUESTIONS + 1).fill(null);
+    let currentQuestion = 1;
+    let db = null, auth = null, userId = null, isFirebaseReady = false;
 
-        const showStatus = (msg, error = false) => {
-            el.statusMessage.textContent = msg;
-            el.statusMessage.className = `p-4 rounded-lg font-medium ${error ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-            el.statusMessage.style.display = 'block';
-            setTimeout(() => el.statusMessage.style.display = 'none', 4000);
-        };
+    const el = {
+        questionNum: document.getElementById('current-question-num'),
+        questionText: document.getElementById('question-text'),
+        scoreInput: document.getElementById('score-input'),
+        progressText: document.getElementById('progress-text'),
+        progressBar: document.getElementById('progress-bar'),
+        assessmentView: document.getElementById('assessment-view'),
+        resultsView: document.getElementById('results-view'),
+        topGiftDisplay: document.getElementById('top-gift-display'),
+        topGiftsList: document.getElementById('top-gifts-list'),
+        manifestationOpenness: document.getElementById('manifestation-openness'),
+        userIdDisplay: document.getElementById('user-id-display')
+    };
 
-        const saveProgress = async (data) => { if (isFirebaseReady && userId) try { await setDoc(doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data"), { answers: JSON.stringify(data) }); } catch(e) {} };
-        const loadProgress = async () => { if (!isFirebaseReady || !userId) return null; try { const snap = await getDoc(doc(db, "artifacts", appId, "users", userId, "assessment_progress", "data")); if (snap.exists() && snap.data().answers) return JSON.parse(snap.data().answers); } catch(e) {} return null; };
+    const updateUI = () => {
+        const answered = currentAnswers.filter(a => a !== null).length;
+        if (answered === TOTAL_QUESTIONS) { renderResults(); return; }
+        while (currentQuestion <= TOTAL_QUESTIONS && currentAnswers[currentQuestion] !== null) currentQuestion++;
+        el.questionNum.textContent = currentQuestion;
+        el.questionText.innerHTML = QUESTIONS[currentQuestion - 1];
+        el.scoreInput.value = '';
+        el.scoreInput.focus();
+        const pct = Math.round((answered / TOTAL_QUESTIONS) * 100);
+        el.progressText.textContent = `${pct}% Complete`;
+        el.progressBar.style.width = `${pct}%`;
+    };
 
-        const updateUI = () => {
-            const answered = currentAnswers.filter(a => a !== null).length - 1;
-            if (answered === QUESTION_COUNT) { renderResults(); return; }
-            while (currentQuestion <= QUESTION_COUNT && currentAnswers[currentQuestion] !== null) currentQuestion++;
-            if (currentQuestion > QUESTION_COUNT) { renderResults(); return; }
-
-            el.questionArea.innerHTML = `<h3 class="text-2xl md:text-3xl font-bold text-indigo-800">Question ${currentQuestion} / 200</h3>
-                <p class="text-base md:text-lg mt-3 text-gray-600">0 = Not at all • 5 = Very Strongly</p>`;
-            el.scoreInput.value = currentAnswers[currentQuestion] || 0;
-            el.scoreInput.focus();
-            el.scoreInput.select();
-
-            const pct = (answered / 200) * 100;
-            el.progressText.textContent = `Progress: ${answered}/200 (${pct.toFixed(0)}%)`;
-            el.progressBar.style.width = `${pct}%`;
-        };
-
-        el.scoreForm.addEventListener('submit', e => {
-            e.preventDefault();
-            const score = parseInt(el.scoreInput.value, 10);
-            if (isNaN(score) || score < 0 || score > 5) return showStatus("Enter 0–5", true);
+    document.getElementById('score-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const score = parseInt(el.scoreInput.value);
+        if (score >= 0 && score <= 5) {
             currentAnswers[currentQuestion] = score;
-            saveProgress(currentAnswers);
             currentQuestion++;
             updateUI();
-        });
+        }
+    });
 
-        const calculateResults = () => {
-            const sums = new Array(20).fill(0);
-            for (let q = 1; q <= 200; q++) if (currentAnswers[q] !== null) sums[(q-1)%20] += currentAnswers[q];
-            return CATEGORIES.map((g,i) => ({gift: g, score: sums[i]})).sort((a,b) => b.score - a.score);
-        };
+    const calculateResults = () => {
+        const scores = GIFTS.slice(0,27).map(() => 0);
+        for (let i = 0; i < 135; i++) {
+            const a = currentAnswers[i+1];
+            if (a !== null) scores[Math.floor(i/5)] += a;
+        }
+        const regular = GIFTS.slice(0,27).map((g,i)=>({gift:g, score:scores[i]})).sort((a,b)=>b.score-a.score);
+        const openness = currentAnswers.slice(136).map((a,i)=>({
+            area: ["Healing","Miracles","Prophecy/Knowledge/Wisdom","Discernment of Spirits","Tongues & Interpretation"][i],
+            score: a||0
+        }));
+        return { regular, openness };
+    };
 
-        const renderResults = () => {
-            const sorted = calculateResults();
-            const top = sorted[0];
-            const d = GIFT_DETAILS[top.gift];
+    const renderResults = () => {
+        const { regular, openness } = calculateResults();
+        el.assessmentView.classList.add('hidden');
+        el.resultsView.classList.remove('hidden');
 
-            el.assessmentView.classList.add('hidden');
-            el.resultsView.classList.remove('hidden');
+        const top = regular[0];
+        el.topGiftDisplay.innerHTML = `<div class="text-center"><h2 class="text-6xl font-bold text-green-600 mb-4">${top.gift}</h2><p class="text-3xl font-bold mb-6">Your Dominant Gift</p><p class="text-3xl">Score: ${top.score}/25</p></div>`;
 
-            el.topGiftDisplay.innerHTML = `
-                <div class="text-center mb-10">
-                    <h4 class="text-2xl font-bold text-green-800">Your Primary Spiritual Gift Is...</h4>
-                    <h1 class="text-5xl md:text-7xl font-extrabold text-green-600 my-6">${top.gift}!</h1>
-                    <p class="text-3xl md:text-4xl font-bold mb-4">Score: ${top.score}/100</p>
+        el.topGiftsList.innerHTML = regular.slice(0,8).map((g,i)=>`
+            <div class="bg-white rounded-2xl p-6 shadow-lg border-l-8 ${i===0?'border-yellow-500':'border-indigo-300'}">
+                <div class="flex justify-between items-center">
+                    <div class="text-5xl font-bold text-indigo-700">#${i+1}</div>
+                    <div class="text-right"><div class="text-2xl font-bold">${g.gift}</div><div class="text-lg text-gray-600">${g.score}/25</div></div>
                 </div>
+            </div>`).join('');
 
-                <div class="bg-yellow-100 border-4 border-yellow-400 rounded-3xl p-8 mb-10 shadow-2xl">
-                    <p class="text-xl md:text-2xl leading-relaxed font-medium text-gray-800">${d.excitement}</p>
-                    <p class="text-lg font-bold text-yellow-800 mt-6">Only about ${d.prevalence} of believers have this as their strongest gift — you are rare and powerful!</p>
-                </div>
+        el.manifestationOpenness.innerHTML = openness.map(o=>`
+            <div class="flex justify-between items-center bg-white rounded-xl p-5 shadow">
+                <div class="font-semibold text-lg">${o.area}</div>
+                <div class="text-3xl font-bold text-purple-700">${o.score}/5</div>
+            </div>`).join('');
+    };
 
-                <div class="bg-blue-50 border-2 border-blue-300 rounded-3xl p-8">
-                    <h3 class="text-2xl md:text-3xl font-bold text-blue-900 mb-6">Biblical Example: ${d.character}</h3>
-                    <p class="text-lg text-gray-700 mb-6 leading-relaxed italic">${d.how}</p>
-                    <div class="space-y-6 text-base md:text-lg italic text-gray-700 leading-relaxed">
-                        <div class="bg-white p-6 rounded-xl shadow">${d.verse1}</div>
-                        <div class="bg-white p-6 rounded-xl shadow">${d.verse2}</div>
-                    </div>
-                </div>
-            `;
-
-            el.topFourList.innerHTML = sorted.slice(0,4).map((item,i) => {
-                const dd = GIFT_DETAILS[item.gift];
-                const style = i === 0 ? 'bg-yellow-100 border-yellow-500 shadow-2xl' : 'bg-gray-50 border-gray-300';
-                return `<div class="p-6 rounded-2xl border-4 ${style} flex justify-between items-center transform transition hover:scale-105">
-                    <div class="flex items-center gap-4 md:gap-6">
-                        <span class="text-4xl md:text-5xl font-bold text-indigo-700">#${i+1}</span>
-                        <div>
-                            <div class="text-xl md:text-2xl font-bold">${item.gift}</div>
-                            <div class="text-sm text-gray-600">~${dd.prevalence} of believers</div>
-                        </div>
-                    </div>
-                    <span class="text-3xl md:text-4xl font-extrabold text-green-600">${item.score}</span>
-                </div>`;
-            }).join('');
-        };
-
-        window.app = {
-            resetAssessment: () => {
-                if (confirm("Delete all progress and start over?")) {
-                    currentAnswers = new Array(201).fill(null);
-                    currentQuestion = 1;
-                    if (isFirebaseReady) saveProgress(currentAnswers);
-                    showStatus("Fresh start! 🎉");
-                    updateUI();
-                }
-            }
-        };
-
-        const start = async () => {
-            if (firebaseConfig.projectId) {
-                try {
-                    const app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
-                    await signInAnonymously(auth);
-                    onAuthStateChanged(auth, user => {
-                        if (user) {
-                            userId = user.uid; isFirebaseReady = true;
-                            el.userIdDisplay.textContent = "Connected • Cloud save active";
-                            (async () => { const saved = await loadProgress(); if (saved) currentAnswers = saved; updateUI(); })();
-                        }
-                    });
-                    return;
-                } catch (e) {}
-            }
-            el.userIdDisplay.textContent = "Offline mode • Local only";
-            updateUI();
-        };
-
-        start();
-    </script>
+    // Start
+    el.userIdDisplay.textContent = "Offline mode • Local only";
+    updateUI();   // This now instantly shows question 1
+</script>
 </body>
 </html>
